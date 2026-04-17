@@ -1,0 +1,357 @@
+/* SHOP PAGE STYLES */
+
+/* Shop Layout */
+.shop-page {
+  padding: 3rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  min-height: 70vh;
+}
+
+@media (max-width: 1024px) {
+  .shop-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .filter-sidebar {
+    order: 2;
+  }
+}
+
+/* Filter Sidebar */
+.filter-sidebar {
+  background: white;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+  height: fit-content;
+  position: sticky;
+  top: 120px;
+}
+
+.filter-section {
+  margin-bottom: 2rem;
+}
+
+.filter-section h3 {
+  margin-bottom: 1rem;
+  color: var(--deep-brown);
+  font-size: 1.1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+.filter-checkbox:last-child {
+  border-bottom: none;
+}
+
+.filter-checkbox input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--beige);
+}
+
+.filter-checkbox span {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.clear-filters {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Shop Main */
+.shop-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.shop-title-row h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--deep-brown);
+}
+
+.product-count {
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+/* Shop Header */
+.shop-header {
+  margin-bottom: 2.5rem;
+}
+
+.shop-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Category Chips */
+.category-chips {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+
+.category-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  background: var(--offwhite);
+  color: var(--text-dark);
+  text-decoration: none;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip:hover,
+.chip.active {
+  background: var(--beige);
+  color: white;
+  border-color: var(--beige);
+  transform: translateY(-1px);
+}
+
+/* Search Sort Row */
+.search-sort-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.shop-search {
+  flex: 1;
+  padding: 0.9rem 1.25rem;
+  border: var(--border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: var(--offwhite);
+}
+
+.shop-search:focus {
+  outline: none;
+  border-color: var(--beige);
+  box-shadow: var(--shadow-soft);
+}
+
+.sort-select {
+  padding: 0.9rem 1.25rem;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--offwhite);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Products Grid - Enhanced */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* PRODUCT CARD ENHANCED */
+.product-card {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-hover);
+}
+
+.product-card img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.product-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-action {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .hover-action {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cta-button {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--deep-brown);
+  border: 1px solid rgba(210, 180, 140, 0.3);
+  padding: 0.75rem 1.25rem;
+  border-radius: 25px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+
+.cta-button:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  color: var(--dark-beige);
+}
+
+.product-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-title-link h3:hover {
+  color: var(--dark-beige);
+}
+
+.product-info {
+  padding: 1.5rem;
+}
+
+.product-info h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--deep-brown);
+  line-height: 1.3;
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark-beige);
+  margin-bottom: 0.25rem;
+}
+
+.wishlist-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+
+.wishlist-btn.active {
+  color: var(--beige);
+  background: rgba(210, 180, 140, 0.2);
+}
+
+
+
+/* Mobile */
+@media (max-width: 768px) {
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .product-card img {
+    height: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .product-card img {
+    height: 260px;
+  }
+  
+  .search-sort-row {
+    flex-direction: column;
+  }
+  
+  .shop-search,
+  .sort-select {
+    width: 100%;
+  }
+}
+
+/* Cart Drawer Smooth Animation */
+.cart-drawer {
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.cart-drawer-overlay {
+  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.3s ease;
+}
+
+/* Navbar Social Icons */
+.social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-icon {
+  font-size: 1.4rem;
+  color: var(--text-dark);
+  transition: var(--transition);
+}
+
+.social-icon:hover {
+  color: var(--beige);
+  transform: scale(1.1);
+}

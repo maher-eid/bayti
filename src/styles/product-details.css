@@ -1,0 +1,379 @@
+/* TEMP until shop.css confirmed - but task requires shop.css if connected */
+.product-details-page {
+  padding: 3rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .product-details-page {
+    --product-padding: 2rem 1rem;
+  }
+}
+
+.product-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 1024px) {
+  .product-main-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+}
+
+.product-image-gallery {
+  width: 100%;
+}
+
+.main-image-container {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-hover);
+  height: 500px;
+  position: relative;
+}
+
+.main-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  cursor: zoom-in;
+}
+
+.main-product-image:hover {
+  transform: scale(1.1);
+}
+
+.thumbnails-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.thumbnails-row::-webkit-scrollbar {
+  display: none;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  border: 2px solid transparent;
+}
+
+.thumbnail.active, .thumbnail:hover {
+  opacity: 1;
+  border-color: var(--beige);
+  transform: scale(1.05);
+}
+
+.product-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.product-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--deep-brown);
+  margin: 0;
+}
+
+.product-sku {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0.5rem 0;
+}
+
+.product-category {
+  font-size: 0.95rem;
+  color: var(--dark-beige);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-price-large {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--dark-beige);
+  margin: 1rem 0;
+}
+
+.product-features {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.product-features li {
+  padding: 0.75rem 0;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  position: relative;
+  padding-left: 2rem;
+}
+
+.product-features li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  color: var(--beige);
+  font-size: 1.2rem;
+}
+
+.quantity-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.quantity-section label {
+  font-weight: 500;
+  color: var(--text-dark);
+  min-width: 70px;
+}
+
+.qty-input {
+  width: 80px;
+  padding: 0.75rem;
+  border: var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.qty-input:focus {
+  outline: none;
+  border-color: var(--beige);
+  box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.1);
+}
+
+.product-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-large {
+  padding: 1.25rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.btn-primary.btn-large {
+  background: var(--dark-beige);
+  color: white;
+}
+
+.btn-primary.btn-large:hover {
+  background: var(--beige);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.btn-wishlist-active {
+  background: var(--beige-light);
+  color: var(--dark-beige);
+  border-color: var(--beige);
+}
+
+.product-tabs-section {
+  margin: 4rem 0;
+  padding: 2rem;
+  background: var(--offwhite);
+  border-radius: var(--radius-xl);
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 1rem 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-light);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.25s ease;
+}
+
+.tab-btn.active {
+  color: var(--deep-brown);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--dark-beige);
+  border-radius: 2px;
+}
+
+.tab-content {
+  padding-top: 1.5rem;
+}
+
+.tab-pane p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--text-dark);
+}
+
+.tab-pane ul {
+  list-style: none;
+  padding: 0;
+}
+
+.tab-pane li {
+  padding: 0.75rem 0;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.tab-pane li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--beige);
+}
+
+.related-products-section {
+  margin: 5rem 0;
+}
+
+.related-products-section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--deep-brown);
+}
+
+.sticky-purchase-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 100;
+  border-top: 1px solid var(--border);
+}
+
+.sticky-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark-beige);
+  min-width: 100px;
+}
+
+.sticky-actions {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.sticky-actions .btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.sticky-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 0.25rem;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sticky-close:hover {
+  background: var(--offwhite);
+  color: var(--text-dark);
+}
+
+@media (max-width: 768px) {
+  .sticky-purchase-bar {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+  
+  .sticky-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .sticky-actions .btn {
+    width: 100%;
+  }
+  
+  .sticky-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .sticky-price {
+    font-size: 1.25rem;
+  }
+}
+
+/* Gallery placeholder fallback */
+.product-gallery-placeholder {
+  height: 500px;
+  background: var(--offwhite);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-size: 1.1rem;
+  border-radius: var(--radius-lg);
+}
+
