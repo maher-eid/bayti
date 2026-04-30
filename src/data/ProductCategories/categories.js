@@ -3,7 +3,7 @@ export const categories = [
     id: "appliances",
     name: "Appliances",
     slug: "appliance",
-    image: '../assets/categories/appliance.webp',
+    image: '/assets/categories/appliance.webp',
     subcategories: [
       { id: "home-appliances", name: "Home Appliances", slug: "home-appliances" },
       { id: "kitchen-appliances", name: "Kitchen Appliances", slug: "kitchen-appliances" }
@@ -13,7 +13,7 @@ export const categories = [
     id: "Toilet",
     name: "Toilet & Bathroom",
     slug: "toilet-bathroom",
-    image: '../assets/categories/toilet.webp',
+    image: '/assets/categories/toilet.webp',
     subcategories: [
       { id: "primanova", name: "Primanova", slug: "primanova" }
     
@@ -23,7 +23,7 @@ export const categories = [
     id: "home-decor",
     name: "Home & Decor",
     slug: "home-decor",
-    image: '../assets/categories/decore.webp',
+    image: '/assets/categories/decore.webp',
     subcategories: [
       { id: "candles-and-home-fragrance", name: "Candles and Home Fragrance", slug: "candles-and-home-fragrance" },
       { id: "clocks", name: "Clocks", slug: "clocks" },
@@ -40,7 +40,7 @@ export const categories = [
     id: "houseware",
     name: "Houseware",
     slug: "house-ware",
-    image: '../assets/categories/house.webp',
+    image: '/assets/categories/house.webp',
     subcategories: [
       
       { id: "cleaning-items", name: "Cleaning Items", slug: "cleaning-items" },
@@ -57,7 +57,7 @@ export const categories = [
     id: "kitchen",
     name: "Kitchen",
     slug: "kitchen",
-    image: '../assets/categories/kitchen.webp',
+    image: '/assets/categories/kitchen.webp',
     subcategories: [
       { id: "apron-and-mitts", name: "Apron and Mitts", slug: "apron-and-mitts" },
       { id: "bakeware", name: "Bakeware", slug: "bakeware" },
@@ -72,7 +72,7 @@ export const categories = [
     id: "organizers",
     name: "Organizers & Storage",
     slug: "organizers",
-    image: '../assets/categories/storage.webp',
+    image: '/assets/categories/storage.webp',
     subcategories: [
       { id: "clothes-storage", name: "Clothes Storage", slug: "clothes-storage" },
       { id: "drawer-organizers", name: "Drawer Organizers", slug: "drawer-organizers" },
@@ -88,7 +88,7 @@ export const categories = [
     id: "tableware",
     name: "Tableware",
     slug: "table-ware",
-    image: '../assets/categories/table.webp',
+    image: '/assets/categories/table.webp',
     subcategories: [
       { id: "coffee-and-tea", name: "Coffee and Tea", slug: "coffee-and-tea" },
       { id: "cutlery", name: "Cutlery", slug: "cutlery" },
