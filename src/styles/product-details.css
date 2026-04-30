@@ -1,4 +1,5 @@
 /* TEMP until shop.css confirmed - but task requires shop.css if connected */
+
 .product-details-page {
   padding: 3rem 2rem;
   max-width: 1400px;
@@ -36,12 +37,16 @@
   box-shadow: var(--shadow-hover);
   height: 500px;
   position: relative;
+  background: #f3f0ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-product-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.3s ease;
   cursor: zoom-in;
 }
@@ -152,7 +157,7 @@
   min-width: 70px;
 }
 
-.qty-input {
+.qty-input, .qty-select {
   width: 80px;
   padding: 0.75rem;
   border: var(--border);
@@ -162,7 +167,7 @@
   font-weight: 500;
 }
 
-.qty-input:focus {
+.qty-input:focus, .qty-select:focus {
   outline: none;
   border-color: var(--beige);
   box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.1);
@@ -377,3 +382,135 @@
   border-radius: var(--radius-lg);
 }
 
+.product-image-gallery {
+  width: 100%;
+}
+
+.main-image-container {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #f3f0ea;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.main-image-container:hover .main-product-image {
+  transform: scale(1.04);
+}
+
+.thumbnails-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: none;
+}
+
+.thumbnails-row::-webkit-scrollbar {
+  display: none;
+}
+
+.thumbnail-btn {
+  width: 78px;
+  height: 92px;
+  flex: 0 0 auto;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.72;
+  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.thumbnail-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-btn:hover,
+.thumbnail-btn.active {
+  opacity: 1;
+  border-color: var(--dark-beige);
+  transform: translateY(-2px);
+}
+
+.product-gallery-placeholder {
+  aspect-ratio: 4 / 5;
+  background: #f3f0ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-size: 1rem;
+  border-radius: 18px;
+}
+/* QUANTITY STEPPER */
+.quantity-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.quantity-label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.quantity-stepper {
+  display: flex;
+  align-items: center;
+  border: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+.quantity-stepper button {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: var(--deep-brown);
+}
+
+.quantity-stepper button:hover {
+  background: var(--offwhite);
+}
+
+.quantity-stepper button:active {
+  transform: scale(0.95);
+}
+
+.quantity-stepper button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quantity-stepper span {
+  width: 48px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--deep-brown);
+}

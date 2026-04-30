@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   // 🔥 FETCH FROM SUPABASE
   const fetchProducts = async () => {
@@ -17,7 +18,7 @@ export default function AdminProductsPage() {
     if (error) {
       console.error(error);
     } else {
-      setProducts(data);
+      setProducts(data || []);
     }
 
     setLoading(false);
@@ -31,6 +32,8 @@ export default function AdminProductsPage() {
   const deleteProduct = async (id) => {
     if (!confirm('Delete this product?')) return;
 
+    setDeletingId(id);
+
     const { error } = await supabase
       .from('products')
       .delete()
@@ -42,15 +45,26 @@ export default function AdminProductsPage() {
     } else {
       fetchProducts(); // refresh list
     }
+
+    setDeletingId(null);
   };
 
   if (loading) return <p>Loading products...</p>;
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '2rem'
+        }}
+      >
         <h1>Products ({products.length})</h1>
-        <Link to="/admin/products/new" className="btn btn-primary">+ Add Product</Link>
+        <Link to="/admin/products/new" className="btn btn-primary">
+          + Add Product
+        </Link>
       </div>
 
       <table className="table">
@@ -66,54 +80,66 @@ export default function AdminProductsPage() {
         </thead>
 
         <tbody>
-          {products.map(product => (
-            <tr key={product.id}>
-              <td>{product.id}</td>
+          {products.map((product) => {
+            const imageSrc =
+              product.main_image ||
+              (Array.isArray(product.images) ? product.images[0] : '') ||
+              '/placeholder.png';
 
-              <td>
-                <img
-                  src={product.main_image || product.images?.[0]}
-                  alt=""
-                  style={{
-                    width: '40px',
-                    height: '40px',
-                    objectFit: 'cover',
-                    borderRadius: '4px'
-                  }}
-                />
-              </td>
+            return (
+              <tr key={product.id}>
+                <td>{product.id}</td>
 
-              <td>{product.title}</td>
+                <td>
+                  <img
+                    src={imageSrc}
+                    alt=""
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      objectFit: 'cover',
+                      borderRadius: '4px'
+                    }}
+                  />
+                </td>
 
-              <td>
-                {categories.find(c => c.slug === product.category_slug)?.name || product.category_slug}
-              </td>
+                <td>{product.title}</td>
 
-              <td>${Number(product.price).toFixed(2)}</td>
+                <td>
+                  {categories.find(c => c.slug === product.category_slug)?.name ||
+                    product.category_slug}
+                </td>
 
-              <td>
-                <Link
-                  to={`/admin/products/${product.id}/edit`}
-                  className="btn btn-secondary"
-                  style={{ marginRight: '0.5rem' }}
-                >
-                  Edit
-                </Link>
+                <td>${Number(product.price || 0).toFixed(2)}</td>
 
-                <button
-                  className="btn btn-danger"
-                  onClick={() => deleteProduct(product.id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
+                <td>
+                  <Link
+                    to={`/admin/products/${product.id}/edit`}
+                    className="btn btn-secondary"
+                    style={{ marginRight: '0.5rem' }}
+                  >
+                    Edit
+                  </Link>
+
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => deleteProduct(product.id)}
+                    disabled={deletingId === product.id}
+                  >
+                    {deletingId === product.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
       {products.length === 0 && (
-        <p>No products yet. <Link to="/admin/products/new">Add one</Link></p>
+        <p>
+          No products yet.{' '}
+          <Link to="/admin/products/new">Add one</Link>
+        </p>
       )}
     </div>
   );

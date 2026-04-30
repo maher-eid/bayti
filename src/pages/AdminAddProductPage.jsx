@@ -1,12 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useStore } from '../context/StoreContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { categories } from '../data/ProductCategories/categories';
 import { supabase } from '../lib/supabase';
 import { uploadProductImages } from '../utils/uploadProductImages';
 
 export default function AdminAddProductPage() {
-  const { adminLoggedIn } = useStore();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -15,6 +13,7 @@ export default function AdminAddProductPage() {
     category: categories[0]?.slug || '',
     subcategory: '',
     price: '',
+    stock_quantity: 100,
     additionalInfo: '',
     hasOptions: false,
   });
@@ -55,8 +54,32 @@ export default function AdminAddProductPage() {
   const addProduct = async (e) => {
     e.preventDefault();
 
+    if (loading) return;
+
     if (selectedFiles.length === 0) {
       setError('Please upload at least one image');
+      return;
+    }
+
+    const price = Number(form.price);
+
+    if (!form.title.trim()) {
+      setError('Title is required');
+      return;
+    }
+
+    if (!form.description.trim()) {
+      setError('Description is required');
+      return;
+    }
+
+    if (!form.category) {
+      setError('Category is required');
+      return;
+    }
+
+    if (!Number.isFinite(price) || price <= 0) {
+      setError('Price must be greater than 0');
       return;
     }
 
@@ -73,11 +96,12 @@ export default function AdminAddProductPage() {
         .filter(Boolean);
 
       const payload = {
-        title: form.title,
-        description: form.description || null,
+        title: form.title.trim(),
+        description: form.description.trim(),
         category_slug: form.category,
-        subcategory_slug: form.subcategory || null,
-        price: Number(form.price),
+        subcategory_slug: form.subcategory.trim() || null,
+        price,
+        stock_quantity: Number(form.stock_quantity) || 100,
         main_image: imageUrls[0] || null,
         images: imageUrls,
         additional_info: additionalInfo,
@@ -100,17 +124,17 @@ export default function AdminAddProductPage() {
         category: categories[0]?.slug || '',
         subcategory: '',
         price: '',
+        stock_quantity: 100,
         additionalInfo: '',
         hasOptions: false,
       });
       setImagePreviews([]);
       setSelectedFiles([]);
 
-      alert('Product created successfully!');
-      navigate('/admin/products');
+      navigate('/admin/products', { state: { success: true } });
     } catch (err) {
       console.error('Product creation error:', err);
-      setError(err.message || 'Failed to create product. Check console.');
+      setError(err instanceof Error ? err.message : 'Failed to create product. Check console.');
     } finally {
       setLoading(false);
     }
@@ -123,15 +147,6 @@ export default function AdminAddProductPage() {
       });
     };
   }, [imagePreviews]);
-
-  if (!adminLoggedIn) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>Admin Access Required</h2>
-        <Link to="/admin/login">Login as Admin</Link>
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -193,7 +208,7 @@ export default function AdminAddProductPage() {
             <label>Category *</label>
             <select
               value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              onChange={(e) => setForm({ ...form, category: e.target.value, subcategory: '' })}
               required
             >
               {categories.map((cat) => (
@@ -206,9 +221,36 @@ export default function AdminAddProductPage() {
 
           <div className="form-group">
             <label>Subcategory (optional)</label>
+            {categories.find((cat) => cat.slug === form.category)?.subcategories?.length > 0 ? (
+              <select
+                value={form.subcategory}
+                onChange={(e) => setForm({ ...form, subcategory: e.target.value })}
+              >
+                <option value="">-- Select Subcategory --</option>
+                {categories
+                  .find((cat) => cat.slug === form.category)
+                  ?.subcategories?.map((sub) => (
+                    <option key={sub.slug} value={sub.slug}>
+                      {sub.name}
+                    </option>
+                  ))}
+              </select>
+            ) : (
+              <p style={{ color: '#999', fontSize: '0.9rem', padding: '0.5rem' }}>
+                No subcategories available for this category
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label>Stock Quantity</label>
             <input
-              value={form.subcategory}
-              onChange={(e) => setForm({ ...form, subcategory: e.target.value })}
+              type="number"
+              min="0"
+              value={form.stock_quantity}
+              onChange={(e) => setForm({ ...form, stock_quantity: e.target.value })}
             />
           </div>
         </div>

@@ -1,8 +1,8 @@
 import { useStore } from '../context/StoreContext';
 import { categories } from '../data/ProductCategories/categories';
 
-export default function FilterSidebar() {
-  const { sortedProducts, setSortBy } = useStore();
+export default function FilterSidebar({ category, mode = 'sidebar' }) {
+  const { setSortBy, priceFilter, setPriceFilter, selectedCategory, setSelectedCategory, clearFilters } = useStore();
 
   const priceRanges = [
     { id: 'all', label: 'All Prices' },
@@ -12,21 +12,29 @@ export default function FilterSidebar() {
   ];
 
   const handlePriceFilter = (rangeId) => {
-    // Future: implement price filter logic
-    console.log('Price filter:', rangeId);
+    setPriceFilter(rangeId);
   };
 
-  return (
-    <aside className="filter-sidebar">
+  const handleCategoryFilter = (categorySlug) => {
+    setSelectedCategory(selectedCategory === categorySlug ? '' : categorySlug);
+  };
+
+  const handleClearFilters = () => {
+    clearFilters();
+  };
+
+  const content = (
+    <>
       <div className="filter-section">
         <h3>Filters</h3>
         <div className="price-filters">
           {priceRanges.map((range) => (
             <label key={range.id} className="filter-checkbox">
-              <input 
-                type="radio" 
-                name="price" 
+              <input
+                type="radio"
+                name="price"
                 value={range.id}
+                checked={priceFilter === range.id}
                 onChange={() => handlePriceFilter(range.id)}
               />
               <span>{range.label}</span>
@@ -36,18 +44,34 @@ export default function FilterSidebar() {
       </div>
 
       <div className="filter-section">
-        <h3>Categories</h3>
+        <h3>{category ? 'Subcategories' : 'Categories'}</h3>
         <div className="category-filters">
-          {categories.slice(0, 6).map((cat) => (
+          {(category ? category.subcategories : categories.slice(0, 6)).map((cat) => (
             <label key={cat.slug} className="filter-checkbox">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={selectedCategory === cat.slug}
+                onChange={() => handleCategoryFilter(cat.slug)}
+              />
               <span>{cat.name}</span>
             </label>
           ))}
         </div>
       </div>
 
-      <button className="clear-filters btn btn-secondary">Clear All</button>
+      {mode === 'sidebar' && (
+        <button className="clear-filters btn btn-secondary" onClick={handleClearFilters}>Clear All</button>
+      )}
+    </>
+  );
+
+  if (mode === 'drawer') {
+    return content;
+  }
+
+  return (
+    <aside className="filter-sidebar">
+      {content}
     </aside>
   );
 }

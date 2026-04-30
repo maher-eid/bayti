@@ -13,7 +13,11 @@ import AdminAddProductPage from './pages/AdminAddProductPage';
 import AdminEditProductPage from './pages/AdminEditProductPage';
 import AdminOrdersPage from './pages/AdminOrdersPage';
 import AdminOrderDetailsPage from './pages/AdminOrderDetailsPage';
+import TrackOrderPage from './pages/TrackOrderPage';
+import CustomerOrderDetailsPage from './pages/CustomerOrderDetailsPage';
 import SubcategoryPage from './pages/SubcategoryPage';
+import WishlistPage from './pages/WishlistPage.jsx';
+import SearchResultsPage from './pages/SearchResultsPage';
 import './styles/product-details.css';
 import './styles/shop.css';
 
@@ -22,11 +26,15 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<HomePage />} />
-<Route path="/category/:slug" element={<CategoryPage />} />
-        <Route path="/category/:slug/:subSlug" element={<SubcategoryPage />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
+       <Route path="/category/:slug/:subSlug" element={<CategoryPage />} />
         <Route path="/product/:id" element={<ProductDetailsPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/track-order" element={<TrackOrderPage />} />
+        <Route path="/order-details" element={<CustomerOrderDetailsPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/search" element={<SearchResultsPage />} />
       </Route>
 
       <Route path="/admin/login" element={<AdminLoginPage />} />

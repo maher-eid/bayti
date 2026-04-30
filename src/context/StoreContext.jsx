@@ -1,129 +1,191 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import { initialOrders, initialProducts } from '../data/products';
+import { createContext, useContext, useState } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
-const StoreContext = createContext(null);
+const StoreContext = createContext();
 
 export function StoreProvider({ children }) {
-  const [products, setProducts] = useLocalStorage('products', initialProducts);
   const [cart, setCart] = useLocalStorage('cart', []);
   const [wishlist, setWishlist] = useLocalStorage('wishlist', []);
-  const [orders, setOrders] = useLocalStorage('orders', initialOrders);
-  const [adminLoggedIn, setAdminLoggedIn] = useLocalStorage('adminLoggedIn', false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('relevance');
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
-  const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart]);
-  const cartTotal = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
+  const [isCartOpen, setIsCartOpen] = useLocalStorage('isCartOpen', false);
+  const [searchTerm, setSearchTerm] = useLocalStorage('searchTerm', '');
+  const [selectedCategory, setSelectedCategory] = useLocalStorage('selectedCategory', '');
+  const [priceFilter, setPriceFilter] = useLocalStorage('priceFilter', 'all');
+  const [sortBy, setSortBy] = useLocalStorage('sortBy', 'name');
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
   const addToCart = (product) => {
-    setCart((current) => {
-      const existing = current.find((item) => item.id === product.id);
-      if (existing) {
-        return current.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+    const maxStock = product.stock_quantity ?? Infinity;
+
+    setCart((prevCart) => {
+      const existing = prevCart.find((item) => item.id === product.id);
+      const newQty = existing ? existing.quantity + 1 : 1;
+
+      if (newQty > maxStock) {
+        alert(`Cannot add more. Only ${maxStock} left for ${product.title}.`);
+        return prevCart;
       }
-      return [...current, { ...product, quantity: 1 }];
+
+      if (existing) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, quantity: newQty } : item
+        );
+      }
+
+      return [...prevCart, { ...product, quantity: 1 }];
     });
+
     setIsCartOpen(true);
   };
 
-  const updateCartQuantity = (productId, change) => {
-    setCart((current) => current
-      .map((item) => item.id === productId ? { ...item, quantity: item.quantity + change } : item)
-      .filter((item) => item.quantity > 0));
+  const updateCartQuantity = (id, quantity) => {
+    if (quantity <= 0) {
+      removeFromCart(id);
+      return;
+    }
+
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
   };
 
-  const removeFromCart = (productId) => {
-    setCart((current) => current.filter((item) => item.id !== productId));
+  const removeFromCart = (id) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
-  const toggleWishlist = (productId) => {
-    setWishlist((current) => current.includes(productId)
-      ? current.filter((id) => id !== productId)
-      : [...current, productId]);
+  const closeCart = () => {
+    setIsCartOpen(false);
   };
 
-  const placeOrder = (customer) => {
-    const newOrder = {
-      id: Date.now(),
-      customerName: customer.name,
-      phone: customer.phone,
-      address: customer.address,
-      city: customer.city || '',
-      items: cart.map(item => ({
-        id: item.id,
-        title: item.title,
-        image: item.image,
-        quantity: item.quantity,
-        price: item.price
-      })),
-      cartCount,
-      total: cartTotal.toFixed(2),
-      status: 'Pending',
-      date: new Date().toISOString().slice(0, 10)
-    };
-
-    setOrders((current) => [newOrder, ...current]);
-    setCart([]);
-    return newOrder;
+  const toggleWishlist = (id) => {
+    setWishlist((prevWishlist) =>
+      prevWishlist.includes(id)
+        ? prevWishlist.filter((itemId) => itemId !== id)
+        : [...prevWishlist, id]
+    );
   };
 
-  const sortedProducts = useMemo(() => {
-    let result = [...products];
-    if (searchTerm.trim()) {
-      const q = searchTerm.trim().toLowerCase();
-      result = result.filter((product) => 
-        [product.title, product.description, product.category].some((text) => text.toLowerCase().includes(q))
+  const cartTotal = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  const placeOrder = async (form) => {
+    const items = cart.map((item) => ({
+      product_id: item.id,
+      title: item.title,
+      price: item.price,
+      quantity: item.quantity,
+    }));
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    try {
+      console.log('placeOrder: Starting fetch to create-order-with-stock');
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-order-with-stock`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            customer_name: form.name,
+            phone: form.phone,
+            address: form.address,
+            city: form.city || '',
+            items,
+          }),
+          signal: controller.signal,
+        }
       );
+
+      console.log('placeOrder: Fetch completed, response status:', response.status);
+      const rawText = await response.text();
+      console.log('placeOrder: Raw response text:', rawText);
+
+      let result = null;
+
+      try {
+        result = rawText ? JSON.parse(rawText) : null;
+        console.log('placeOrder: Parsed JSON result:', result);
+      } catch (parseError) {
+        console.error('placeOrder: JSON parse error:', parseError);
+        result = { error: rawText || 'Invalid server response' };
+      }
+
+      if (!response.ok) {
+        console.error('placeOrder: Response not ok, throwing error:', result?.error || 'Failed to place order');
+        throw new Error(result?.error || 'Failed to place order');
+      }
+
+      if (!result?.order) {
+        console.error('placeOrder: No order in result, result:', result);
+        throw new Error('Order was created, but no order data was returned');
+      }
+
+      console.log('placeOrder: Returning order:', result.order);
+      setCart([]);
+      return result.order;
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out. Please try again.');
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-    switch (sortBy) {
-      case 'price-low':
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case 'title':
-        result.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      default:
-        break;
-    }
-    return result;
-  }, [products, searchTerm, sortBy]);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('');
+    setPriceFilter('all');
+    setSortBy('name');
+  };
+
+  const openFilterDrawer = () => setIsFilterDrawerOpen(true);
+  const closeFilterDrawer = () => setIsFilterDrawerOpen(false);
 
   const value = {
-    products,
-    sortedProducts,
-    setProducts,
     cart,
-    wishlist,
-    orders,
-    setOrders,
-    cartCount,
     cartTotal,
-    searchTerm,
-    setSearchTerm,
-    sortBy,
-    setSortBy,
-    adminLoggedIn,
-    setAdminLoggedIn,
+    wishlist,
     isCartOpen,
-    openCart: () => setIsCartOpen(true),
-    closeCart: () => setIsCartOpen(false),
+    isFilterDrawerOpen,
+    searchTerm,
+    selectedCategory,
+    priceFilter,
+    sortBy,
     addToCart,
     updateCartQuantity,
     removeFromCart,
+    closeCart,
+    openFilterDrawer,
+    closeFilterDrawer,
     toggleWishlist,
-    placeOrder
+    placeOrder,
+    setSearchTerm,
+    setSelectedCategory,
+    setPriceFilter,
+    setSortBy,
+    clearFilters,
   };
 
-  return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
+  return (
+    <StoreContext.Provider value={value}>
+      {children}
+    </StoreContext.Provider>
+  );
 }
 
 export function useStore() {
   const context = useContext(StoreContext);
-  if (!context) throw new Error('useStore must be used within StoreProvider');
+  if (!context) {
+    throw new Error('useStore must be used within a StoreProvider');
+  }
   return context;
 }

@@ -19,6 +19,7 @@ export default function AdminEditProductPage() {
     category: categories[0]?.slug || '',
     subcategory: '',
     price: '',
+    stock_quantity: 100,
     additionalInfo: '',
     hasOptions: false,
   });
@@ -52,6 +53,7 @@ export default function AdminEditProductPage() {
         category: data.category_slug || categories[0]?.slug || '',
         subcategory: data.subcategory_slug || '',
         price: data.price ?? '',
+        stock_quantity: data.stock_quantity ?? 100,
         additionalInfo: Array.isArray(data.additional_info)
           ? data.additional_info.join('\n')
           : '',
@@ -126,6 +128,7 @@ export default function AdminEditProductPage() {
         category_slug: form.category,
         subcategory_slug: form.subcategory || null,
         price: Number(form.price),
+        stock_quantity: Number(form.stock_quantity) || 100,
         main_image: allImages[0] || null,
         images: allImages,
         additional_info: additionalInfo,
@@ -219,7 +222,7 @@ export default function AdminEditProductPage() {
             <label>Category</label>
             <select
               value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              onChange={(e) => setForm({ ...form, category: e.target.value, subcategory: '' })}
             >
               {categories.map((cat) => (
                 <option key={cat.slug} value={cat.slug}>
@@ -230,10 +233,37 @@ export default function AdminEditProductPage() {
           </div>
 
           <div className="form-group">
-            <label>Subcategory</label>
+            <label>Subcategory (optional)</label>
+            {categories.find((cat) => cat.slug === form.category)?.subcategories?.length > 0 ? (
+              <select
+                value={form.subcategory}
+                onChange={(e) => setForm({ ...form, subcategory: e.target.value })}
+              >
+                <option value="">-- Select Subcategory --</option>
+                {categories
+                  .find((cat) => cat.slug === form.category)
+                  ?.subcategories?.map((sub) => (
+                    <option key={sub.slug} value={sub.slug}>
+                      {sub.name}
+                    </option>
+                  ))}
+              </select>
+            ) : (
+              <p style={{ color: '#999', fontSize: '0.9rem', padding: '0.5rem' }}>
+                No subcategories available for this category
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label>Stock Quantity</label>
             <input
-              value={form.subcategory}
-              onChange={(e) => setForm({ ...form, subcategory: e.target.value })}
+              type="number"
+              min="0"
+              value={form.stock_quantity}
+              onChange={(e) => setForm({ ...form, stock_quantity: e.target.value })}
             />
           </div>
         </div>

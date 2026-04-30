@@ -3,24 +3,27 @@ export const categories = [
     id: "appliances",
     name: "Appliances",
     slug: "appliance",
-    image: 'https://images.unsplash.com/photo-1586208958839-06c17cacdf08?auto=format&amp;fit=crop&amp;w=400&amp;q=80',
+    image: '../assets/categories/appliance.webp',
     subcategories: [
       { id: "home-appliances", name: "Home Appliances", slug: "home-appliances" },
       { id: "kitchen-appliances", name: "Kitchen Appliances", slug: "kitchen-appliances" }
     ]
   },
   {
-    id: "health-beauty",
-    name: "Health & Beauty",
-    slug: "health-beauty",
-    image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&amp;fit=crop&amp;w=400&amp;q=80',
-    subcategories: []
+    id: "Toilet",
+    name: "Toilet & Bathroom",
+    slug: "toilet-bathroom",
+    image: '../assets/categories/toilet.webp',
+    subcategories: [
+      { id: "primanova", name: "Primanova", slug: "primanova" }
+    
+    ]
   },
   {
     id: "home-decor",
     name: "Home & Decor",
     slug: "home-decor",
-    image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&amp;fit=crop&amp;w=400&amp;q=80',
+    image: '../assets/categories/decore.webp',
     subcategories: [
       { id: "candles-and-home-fragrance", name: "Candles and Home Fragrance", slug: "candles-and-home-fragrance" },
       { id: "clocks", name: "Clocks", slug: "clocks" },
@@ -37,9 +40,9 @@ export const categories = [
     id: "houseware",
     name: "Houseware",
     slug: "house-ware",
-    image: 'https://images.unsplash.com/photo-1583947582886-f40ec95dd752?auto=format&amp;fit=crop&amp;w=400&amp;q=80',
+    image: '../assets/categories/house.webp',
     subcategories: [
-      { id: "bathroom-products", name: "Bathroom Products", slug: "bathroom-products" },
+      
       { id: "cleaning-items", name: "Cleaning Items", slug: "cleaning-items" },
       { id: "drying-racks", name: "Drying Racks", slug: "drying-racks" },
       { id: "home-improvement", name: "Home Improvement", slug: "home-improvement" },
@@ -54,7 +57,7 @@ export const categories = [
     id: "kitchen",
     name: "Kitchen",
     slug: "kitchen",
-    image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&amp;fit=crop&amp;w=400&amp;q=80',
+    image: '../assets/categories/kitchen.webp',
     subcategories: [
       { id: "apron-and-mitts", name: "Apron and Mitts", slug: "apron-and-mitts" },
       { id: "bakeware", name: "Bakeware", slug: "bakeware" },
@@ -69,7 +72,7 @@ export const categories = [
     id: "organizers",
     name: "Organizers & Storage",
     slug: "organizers",
-    image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&amp;fit=crop&amp;w=400&amp;q=80',
+    image: '../assets/categories/storage.webp',
     subcategories: [
       { id: "clothes-storage", name: "Clothes Storage", slug: "clothes-storage" },
       { id: "drawer-organizers", name: "Drawer Organizers", slug: "drawer-organizers" },
@@ -85,7 +88,7 @@ export const categories = [
     id: "tableware",
     name: "Tableware",
     slug: "table-ware",
-    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&amp;fit=crop&amp;w=400&amp;q=80',
+    image: '../assets/categories/table.webp',
     subcategories: [
       { id: "coffee-and-tea", name: "Coffee and Tea", slug: "coffee-and-tea" },
       { id: "cutlery", name: "Cutlery", slug: "cutlery" },

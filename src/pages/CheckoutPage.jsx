@@ -1,66 +1,85 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
-import { supabase } from '../lib/supabase';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, clearCart } = useStore();
+  const { cart, cartTotal, placeOrder } = useStore();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: '',
     phone: '',
     address: '',
-    city: ''
+    city: '',
+    paymentOption: 'cash',
+    addNote: false,
+    note: '',
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const DELIVERY_CHARGE = 5.00;
+  const totalWithDelivery = cartTotal + DELIVERY_CHARGE;
+
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!form.name || !form.phone || !form.address) {
-      setError('Please fill all required fields');
+    if (!form.name || !form.phone || !form.address || cart.length === 0 || submitting) {
       return;
     }
 
-    if (cart.length === 0) {
-      setError('Cart is empty');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
+    setSubmitting(true);
 
     try {
-      // 🔥 SAVE ORDER TO SUPABASE
-      const { error: insertError } = await supabase
-        .from('orders')
-        .insert([{
-          customer_name: form.name,
-          phone: form.phone,
-          address: form.address,
-          city: form.city,
-          total: cartTotal,
-          status: 'Pending',
-          items: cart, // 🔥 full products saved
-          date: new Date().toISOString()
-        }]);
+      const newOrder = await placeOrder(form);
 
-      if (insertError) throw insertError;
+      if (!newOrder || !newOrder.id) {
+        console.error('placeOrder returned invalid order:', newOrder);
+        alert('Checkout reached the backend, but no valid order was returned.');
+        return;
+      }
 
-      // ✅ CLEAR CART AFTER SUCCESS
-      clearCart();
+      const payload = {
+        orderId: newOrder.id,
+        customerName: form.name,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+        total: Number(totalWithDelivery.toFixed(2)),
+        paymentOption: form.paymentOption,
+        createdAt: new Date().toISOString(),
+        items: cart.map((item) => ({
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+      };
 
-      alert('Order placed successfully!');
+      if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+        fetch(`${SUPABASE_URL}/functions/v1/order-notify-admin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify(payload),
+        }).catch((error) => {
+          console.error('Admin email failed:', error);
+        });
+      } else {
+        console.warn('Supabase env vars missing: order-notify-admin was skipped.');
+      }
+
+      alert(`Order placed successfully! Your order ID is #${newOrder.id}`);
       navigate('/');
-
-    } catch (err) {
-      console.error('Order error:', err);
-      setError(err.message || 'Failed to place order');
+    } catch (error) {
+      console.error('Checkout failed:', error);
+      alert('Something went wrong while placing your order.');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -68,41 +87,30 @@ export default function CheckoutPage() {
     <section className="section" style={{ maxWidth: '1200px' }}>
       <h1 className="section-title">Checkout</h1>
 
-      {error && (
-        <p style={{ color: 'red', marginBottom: '1rem' }}>
-          ❌ {error}
-        </p>
-      )}
-
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-        
-        {/* FORM */}
+      <div className="checkout-grid">
         <form className="card" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Full Name *</label>
+            <label>Full Name</label>
             <input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              required
             />
           </div>
 
           <div className="form-group">
-            <label>Phone *</label>
+            <label>Phone</label>
             <input
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              required
             />
           </div>
 
           <div className="form-group">
-            <label>Address *</label>
+            <label>Address</label>
             <textarea
               rows="3"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
-              required
             />
           </div>
 
@@ -114,27 +122,99 @@ export default function CheckoutPage() {
             />
           </div>
 
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? 'Placing Order...' : 'Place Order'}
+          <div className="form-group">
+            <label>Payment Options</label>
+            <div className="form-options">
+              <label className="form-option">
+                <input
+                  type="radio"
+                  name="paymentOption"
+                  value="cash"
+                  checked={form.paymentOption === 'cash'}
+                  onChange={(e) => setForm({ ...form, paymentOption: e.target.value })}
+                />
+                <span>Pay via Cash</span>
+              </label>
+              <label className="form-option">
+                <input
+                  type="radio"
+                  name="paymentOption"
+                  value="whish"
+                  checked={form.paymentOption === 'whish'}
+                  onChange={(e) => setForm({ ...form, paymentOption: e.target.value })}
+                />
+                <span>Pay via Whish on 70394388</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-check">
+              <input
+                type="checkbox"
+                checked={form.addNote}
+                onChange={(e) => setForm({ ...form, addNote: e.target.checked })}
+              />
+              <span>Add note</span>
+            </label>
+{form.addNote && (
+              <textarea
+                className="note-textarea"
+                rows="3"
+                placeholder="Note about your order e.g. .."
+                value={form.note}
+                onChange={(e) => setForm({ ...form, note: e.target.value })}
+              />
+            )}
+          </div>
+
+          <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '1rem', fontStyle: 'italic', lineHeight: '1.5' }}>
+            By proceeding with your purchase you agree to our Terms and Conditions and Privacy Policy
+          </p>
+
+          <button className="btn btn-primary" type="submit" disabled={submitting}>
+            {submitting ? 'Placing Order...' : 'Place Order'}
           </button>
         </form>
 
-        {/* SUMMARY */}
         <div className="card">
           <h3>Order Summary</h3>
-
-          {cart.map((item, i) => (
-            <p key={i}>
-              {item.title} × {item.quantity}
-            </p>
+          {cart.map((item) => (
+            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+              <img 
+                src={item.image} 
+                alt={item.title} 
+                className="cart-item-image" 
+                style={{ width: '50px', height: '50px', objectFit: 'cover', flexShrink: 0 }} 
+              />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>{item.title}</div>
+                <div style={{ fontSize: '0.9rem', color: '#666' }}>
+                  × {item.quantity} • ${(item.price * item.quantity).toFixed(2)}
+                </div>
+              </div>
+            </div>
           ))}
 
-          <div className="cart-drawer-subtotal">
-            <span>Total</span>
+          <div className="cart-drawer-subtotal" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0, 0, 0, 0.1)' }}>
+            <span>Subtotal</span>
             <strong>${cartTotal.toFixed(2)}</strong>
           </div>
-        </div>
 
+          <div className="cart-drawer-subtotal">
+            <span>Delivery Charge</span>
+            <strong>${DELIVERY_CHARGE.toFixed(2)}</strong>
+          </div>
+
+          <div className="cart-drawer-subtotal" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(0, 0, 0, 0.1)', fontSize: '1.1rem' }}>
+            <span>Total</span>
+            <strong>${totalWithDelivery.toFixed(2)}</strong>
+          </div>
+
+          <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '1rem', fontStyle: 'italic', lineHeight: '1.5' }}>
+            Kindly note that delivery charges may differ depending on the size and weight of your order.
+          </p>
+        </div>
       </div>
     </section>
   );
