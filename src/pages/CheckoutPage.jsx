@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import OrderSuccess from '../components/OrderSuccess';
 import { useStore } from '../context/StoreContext';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -23,6 +24,14 @@ export default function CheckoutPage() {
   const totalWithDelivery = cartTotal + DELIVERY_CHARGE;
 
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [orderId, setOrderId] = useState(null);
+
+  const handleCloseSuccess = useCallback(() => {
+    setShowSuccess(false);
+    setOrderId(null);
+    navigate('/');
+  }, [navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -73,8 +82,8 @@ export default function CheckoutPage() {
         console.warn('Supabase env vars missing: order-notify-admin was skipped.');
       }
 
-      alert(`Order placed successfully! Your order ID is #${newOrder.id}`);
-      navigate('/');
+      setShowSuccess(true);
+      setOrderId(newOrder.id);
     } catch (error) {
       console.error('Checkout failed:', error);
       alert('Something went wrong while placing your order.');
@@ -125,7 +134,8 @@ export default function CheckoutPage() {
           <div className="form-group">
             <label>Payment Options</label>
             <div className="form-options">
-              <label className="form-option">
+              <lab
+              el className="form-option">
                 <input
                   type="radio"
                   name="paymentOption"
@@ -134,7 +144,7 @@ export default function CheckoutPage() {
                   onChange={(e) => setForm({ ...form, paymentOption: e.target.value })}
                 />
                 <span>Pay via Cash</span>
-              </label>
+              </lab>
               <label className="form-option">
                 <input
                   type="radio"
@@ -172,10 +182,17 @@ export default function CheckoutPage() {
             By proceeding with your purchase you agree to our Terms and Conditions and Privacy Policy
           </p>
 
-          <button className="btn btn-primary" type="submit" disabled={submitting}>
+          <button className="btn btn-primary" type="submit" disabled={submitting || showSuccess}>
             {submitting ? 'Placing Order...' : 'Place Order'}
           </button>
         </form>
+        {showSuccess && (
+          <OrderSuccess 
+            show={showSuccess} 
+            orderId={orderId} 
+            onClose={handleCloseSuccess} 
+          />
+        )}
 
         <div className="card">
           <h3>Order Summary</h3>

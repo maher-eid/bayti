@@ -31,7 +31,7 @@ export const categories = [
       { id: "flowers-and-pots", name: "Flowers and Pots", slug: "flowers-and-pots" },
       { id: "mirrors", name: "Mirrors", slug: "mirrors" },
       { id: "rugs-and-mats", name: "Rugs and Mats", slug: "rugs-and-mats" },
-      { id: "straw-products", name: "Straw Products", slug: "straw-products" },
+      { id: "rags", name: "Rags", slug: "rags" },
       { id: "tables-and-chairs", name: "Tables and Chairs", slug: "tables-and-chairs" },
       { id: "textile", name: "Textile", slug: "textile" }
     ]
@@ -59,13 +59,13 @@ export const categories = [
     slug: "kitchen",
     image: '/assets/categories/kitchen.webp',
     subcategories: [
-      { id: "apron-and-mitts", name: "Apron and Mitts", slug: "apron-and-mitts" },
-      { id: "bakeware", name: "Bakeware", slug: "bakeware" },
-      { id: "cookware", name: "Cookware", slug: "cookware" },
-      { id: "food-storage", name: "Food Storage", slug: "food-storage" },
-      { id: "kitchen-organizers", name: "Kitchen Organizers", slug: "kitchen-organizers" },
+      { id: "cooper", name: "cooper", slug: "cooper" },
+      { id: "bella-cucina", name: "bella cucina", slug: "bella-cucina" },
+      { id: "deli-glass", name: "Deli Glass", slug: "deli-glass" },
+      { id: "muller-koch", name: "Muller Koch", slug: "muller-koch" },
+      { id: "momaz", name: "Momaz", slug: "momaz" },
       { id: "kitchen-tools-and-gadgets", name: "Kitchen Tools and Gadgets", slug: "kitchen-tools-and-gadgets" },
-      { id: "kitchen-towels", name: "Kitchen Towels", slug: "kitchen-towels" }
+      { id: "spoon", name: "Spoon", slug: "spoon" }
     ]
   },
   {
